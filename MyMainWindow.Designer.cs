@@ -51,7 +51,6 @@
 			contextMenuStrip1.Items.AddRange(new ToolStripItem[] { ExitToolStripMenuItem });
 			contextMenuStrip1.Name = "contextMenuStrip1";
 			contextMenuStrip1.Size = new Size(101, 26);
-			contextMenuStrip1.Opening += contextMenuStrip1_Opening;
 			// 
 			// ExitToolStripMenuItem
 			// 
@@ -82,7 +81,7 @@
 			button2.UseVisualStyleBackColor = true;
 			button2.Click += button2_Click;
 			// 
-			// MainWindow
+			// MyMainWindow
 			// 
 			AutoScaleDimensions = new SizeF(7F, 17F);
 			AutoScaleMode = AutoScaleMode.Font;
@@ -92,7 +91,7 @@
 			FormBorderStyle = FormBorderStyle.FixedSingle;
 			MaximizeBox = false;
 			MinimizeBox = false;
-			Name = "MainWindow";
+			Name = "MyMainWindow";
 			Text = "Ximi";
 			FormClosing += MainWindow_FormClosing;
 			FormClosed += MainWindow_FormClosed;

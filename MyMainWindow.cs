@@ -40,6 +40,7 @@ namespace ProjXimi
 
 
 
+		// 打开和关闭Ximi悬浮窗口
 		Ximi ximi;
 		private void button1_Click(object sender, EventArgs e)
 		{
@@ -65,24 +66,26 @@ namespace ProjXimi
 		/// <param name="e"></param>
 		private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
-			Show();
+			Show();//展示
 		}
 
 
 		private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			if (stillAlive)
+			switch(e.CloseReason)
 			{
-				e.Cancel = true;
-				Hide();
+				case CloseReason.UserClosing:
+					//关闭窗口？如果不想死，就取消关闭
+					if (stillAlive)
+					{
+						e.Cancel = true;
+						Hide();
+					}
+					break;
 			}
 		}
 
 
-		private void contextMenuStrip1_Opening(object sender, System.ComponentModel.CancelEventArgs e)
-		{
-
-		}
 
 		/// <summary>
 		/// 还不能关闭哦

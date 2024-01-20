@@ -17,24 +17,57 @@ namespace ProjXimi
 		public Ximi()
 		{
 			InitializeComponent();
-			//GotFocus += pictureBox1.GotFocus;
-			//LostFocus += pictureBox1.LostFocus;
+			if (lockScreenTimer != null)
+				MessageBox.Show("lockScreenTimer初始值不为Null", "Error");
+			lockScreenTimer = new System.Windows.Forms.Timer();
+			lockScreenTimer.Interval = 3000;
+			lockScreenTimer.Tick += delegate
+			{
+				LockWorkStation();
+				SendMessage(Handle, WM_SYSCOMMAND, SC_MONITORPOWER, 2);
+				lockScreenTimer.Stop();
+			};
+
+			if (topmostTimer != null)
+				MessageBox.Show("topmostTimer初始值不为Null", "Error");
+			topmostTimer = new System.Windows.Forms.Timer();
+			topmostTimer.Interval = 1000;
+			topmostTimer.Tick += delegate
+			{
+				TopMost = true;
+			};
+			topmostTimer.Start();//立即启动
 		}
 
+		System.Windows.Forms.Timer topmostTimer;
+		System.Windows.Forms.Timer lockScreenTimer;
 		private void Ximi_Load(object sender, EventArgs e)
 		{
-
+			//label1.t
+			//label1.Parent = pictureBox1;
+			label2.Text = "";
+			pictureBox1.MouseWheel += Ximi_MouseWheel;
+			//label1.Location = new Point(0, 0);
 		}
 
-		private void pictureBox1_Click(object sender, EventArgs e)
-		{
-
-		}
 
 		Point point; //鼠标按下时的点
 		bool isMoving = false;//标识是否拖动
 
-
+		private void Ximi_MouseWheel(object? sender, MouseEventArgs e)
+		{
+			if (isMoving)
+			{
+				if (e.Delta > 0)
+				{
+					SendMessage(Handle, WM_APPCOMMAND, 0, APPCOMMAND_VOLUME_UP);
+				}
+				else
+				{
+					SendMessage(Handle, WM_APPCOMMAND, 0, APPCOMMAND_VOLUME_DOWN);
+				}
+			}
+		}
 		private void Ximi_MouseDown(object sender, MouseEventArgs e)
 		{
 			//MessageBox.Show("cnm");
@@ -43,10 +76,15 @@ namespace ProjXimi
 			pictureBox1.Image = Properties.Resources.zouFullClicking;
 		}
 
-		private void Ximi_MouseUp(object sender, MouseEventArgs e)
+		private void UpMouse()
 		{
 			isMoving = false;//标识是否拖动
 			pictureBox1.Image = Properties.Resources.zouFull;
+		}
+
+		private void Ximi_MouseUp(object sender, MouseEventArgs e)
+		{
+			UpMouse();
 		}
 
 		private void Ximi_MouseMove(object sender, MouseEventArgs e)
@@ -84,20 +122,36 @@ namespace ProjXimi
 
 
 		//**********引用Win32程序****************
-		[DllImport("user32.dll", SetLastError = true)]
+		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
 		private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
-		[DllImport("user32.dll", SetLastError = true)]
+		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
 		private static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
-		[DllImport("user32.dll", SetLastError = true)]
+		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
 		private static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
 
 		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
 		private static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
+
+		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+		private static extern bool LockWorkStation();//调用windows的系统锁定 
+
+		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+		public static extern IntPtr SendMessage(IntPtr hWnd, uint wMsg, uint wParam, uint lParam);
+		
+       
+
+
+
 		//***************Win32的常量*********************
 		private const uint WM_CLOSE = 0x0010;
 		private const uint WM_SYSCOMMAND = 0x0112;
-		private const int SC_MAXIMIZE = 0xF030;
+		private const uint SC_MAXIMIZE = 0xF030;
+		private const uint SC_MONITORPOWER = 0xF170;
+		private const uint APPCOMMAND_VOLUME_MUTE = 0x80000;
+		private const uint APPCOMMAND_VOLUME_UP = 0xA0000;
+		private const uint APPCOMMAND_VOLUME_DOWN = 0x90000;
+		private const uint WM_APPCOMMAND = 0x319;
 
 
 		// EnumWindows回调函数委托  
@@ -126,26 +180,36 @@ namespace ProjXimi
 			{
 				switch (e.KeyCode)
 				{
+					case Keys.F1:
+						MessageBox.Show("F4:关闭所有文件夹\nL:3秒后锁屏\n滚轮调节音量", "提示");
+						break;
 					case Keys.F4:
 						EnumWindows(new EnumWindowsProc(CloseExplorerWindow), IntPtr.Zero);
-						//while (true){
-						//	IntPtr hWnd = FindWindow("CabinetWClass", null);
-						//	if (hWnd != IntPtr.Zero)
-						//	{
-						//		PostMessage(hWnd, WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
-						//		//PostMessage(hWnd, WM_SYSCOMMAND, (IntPtr)SC_MAXIMIZE, IntPtr.Zero);
-						//	}
-						//	else
-						//		break;
-						//}
+						break;
+					case Keys.L:
+						lockScreenTimer.Start();
 						break;
 				}
+				UpMouse();
 			}
 		}
+
+
+
+
+
+
 
 		private void label2_Click(object sender, EventArgs e)
 		{
 
+		}
+
+		private void Ximi_FormClosed(object sender, FormClosedEventArgs e)
+		{
+			if(lockScreenTimer!=null)
+				lockScreenTimer.Dispose();
+			topmostTimer.Dispose();
 		}
 	}
 }

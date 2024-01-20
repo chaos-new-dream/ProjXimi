@@ -32,6 +32,7 @@
 			pictureBox1 = new PictureBox();
 			timer1 = new System.Windows.Forms.Timer(components);
 			label1 = new Label();
+			label2 = new Label();
 			((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
 			SuspendLayout();
 			// 
@@ -39,13 +40,12 @@
 			// 
 			pictureBox1.BackColor = Color.Transparent;
 			pictureBox1.Image = Properties.Resources.zouFull;
-			pictureBox1.Location = new Point(241, 140);
+			pictureBox1.Location = new Point(200, 200);
 			pictureBox1.Name = "pictureBox1";
 			pictureBox1.Size = new Size(90, 120);
 			pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
 			pictureBox1.TabIndex = 0;
 			pictureBox1.TabStop = false;
-			pictureBox1.Click += pictureBox1_Click;
 			pictureBox1.MouseDown += Ximi_MouseDown;
 			pictureBox1.MouseMove += Ximi_MouseMove;
 			pictureBox1.MouseUp += Ximi_MouseUp;
@@ -57,15 +57,29 @@
 			// 
 			// label1
 			// 
+			label1.Anchor = AnchorStyles.Top;
 			label1.AutoSize = true;
-			label1.BackColor = Color.Transparent;
+			label1.BackColor = Color.White;
 			label1.Font = new Font("Microsoft YaHei UI", 16F, FontStyle.Regular, GraphicsUnit.Point);
-			label1.Location = new Point(195, 203);
+			label1.Location = new Point(154, 255);
 			label1.Name = "label1";
 			label1.Size = new Size(189, 90);
 			label1.TabIndex = 1;
 			label1.Text = "大写锁定已经打开\r\n数字锁定已经关闭\r\n滚动锁定已经打开";
+			label1.TextAlign = ContentAlignment.MiddleCenter;
 			label1.Click += label1_Click;
+			label1.MouseDown += Ximi_MouseDown;
+			label1.MouseMove += Ximi_MouseMove;
+			label1.MouseUp += Ximi_MouseUp;
+			// 
+			// label2
+			// 
+			label2.AutoSize = true;
+			label2.Location = new Point(224, 170);
+			label2.Name = "label2";
+			label2.Size = new Size(47, 17);
+			label2.TabIndex = 2;
+			label2.Text = "Debug";
 			// 
 			// Ximi
 			// 
@@ -73,6 +87,7 @@
 			AutoScaleMode = AutoScaleMode.Font;
 			BackColor = Color.White;
 			ClientSize = new Size(499, 388);
+			Controls.Add(label2);
 			Controls.Add(label1);
 			Controls.Add(pictureBox1);
 			FormBorderStyle = FormBorderStyle.None;
@@ -81,6 +96,7 @@
 			Text = "Ximi";
 			TopMost = true;
 			TransparencyKey = Color.White;
+			FormClosed += Ximi_FormClosed;
 			Load += Ximi_Load;
 			KeyDown += Ximi_KeyDown;
 			((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
@@ -93,5 +109,6 @@
 		private PictureBox pictureBox1;
 		private System.Windows.Forms.Timer timer1;
 		private Label label1;
+		private Label label2;
 	}
 }
