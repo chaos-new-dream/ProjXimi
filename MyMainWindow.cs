@@ -7,6 +7,11 @@ namespace ProjXimi
 			ximi = new Ximi();
 			InitializeComponent();
 		}
+		private void MainWindow_Shown(object sender, EventArgs e)
+		{
+			Hide();
+		}
+
 
 
 		//**************ÍÏ¶¯**********************
@@ -98,11 +103,6 @@ namespace ProjXimi
 		{
 			stillAlive = false;
 			Close();
-		}
-
-		private void MainWindow_Shown(object sender, EventArgs e)
-		{
-			Hide();
 		}
 
 		private void MainWindow_FormClosed(object sender, FormClosedEventArgs e)

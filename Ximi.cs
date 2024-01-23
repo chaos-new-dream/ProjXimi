@@ -10,13 +10,61 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+
 namespace ProjXimi
 {
 	public partial class Ximi : Form
 	{
+		//**********引用Win32程序****************
+		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+		private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
+		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+		private static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+		private static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
+
+		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+		private static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
+
+		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+		private static extern bool LockWorkStation();//调用windows的系统锁定 
+
+		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+		public static extern IntPtr SendMessage(IntPtr hWnd, uint wMsg, uint wParam, uint lParam);
+
+
+
+
+
+		//***************Win32的常量*********************
+		private const uint WM_CLOSE = 0x0010;
+		private const uint WM_SYSCOMMAND = 0x0112;
+		private const uint SC_MAXIMIZE = 0xF030;
+		private const uint SC_MONITORPOWER = 0xF170;
+		private const uint APPCOMMAND_VOLUME_MUTE = 0x80000;
+		private const uint APPCOMMAND_VOLUME_UP = 0xA0000;
+		private const uint APPCOMMAND_VOLUME_DOWN = 0x90000;
+		private const uint WM_APPCOMMAND = 0x319;
+
+
+		System.Windows.Forms.Timer each1sTimer;
+		System.Windows.Forms.Timer lockScreenTimer;
+		System.Windows.Forms.Timer mainTimer;
+
+
+		PerformanceCounter ramCounter;
+		PerformanceCounter cpuCounter;
+		PerformanceCounter diskCounter;
 		public Ximi()
 		{
 			InitializeComponent();
+
+			ramCounter = new PerformanceCounter("Memory", "% Committed Bytes In Use");
+			cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+			diskCounter = new PerformanceCounter("PhysicalDisk", "% Disk Time", "_Total");
+
+			// 初始化计时器
 			if (lockScreenTimer != null)
 				MessageBox.Show("lockScreenTimer初始值不为Null", "Error");
 			lockScreenTimer = new System.Windows.Forms.Timer();
@@ -28,46 +76,56 @@ namespace ProjXimi
 				lockScreenTimer.Stop();
 			};
 
-			if (topmostTimer != null)
+			// 初始化显示系统信息计时器
+			if (each1sTimer != null)
 				MessageBox.Show("topmostTimer初始值不为Null", "Error");
-			topmostTimer = new System.Windows.Forms.Timer();
-			topmostTimer.Interval = 1000;
-			topmostTimer.Tick += delegate
+			each1sTimer = new System.Windows.Forms.Timer();
+			each1sTimer.Interval = 1000;
+			each1sTimer.Tick += delegate
 			{
 				TopMost = true;
+				label2.Text = "";
+				label2.Text += "RAM: " + $"{ramCounter.NextValue():0.0}%".PadLeft(6) + "\n";
+				label2.Text += "CPU: " + $"{cpuCounter.NextValue():0.0}%".PadLeft(6) + "\n";
+				label2.Text += "Disk:" + $"{diskCounter.NextValue():0.0}%".PadLeft(6) + "\n";
 			};
-			topmostTimer.Start();//立即启动
-		}
+			each1sTimer.Start();//立即启动
 
-		System.Windows.Forms.Timer topmostTimer;
-		System.Windows.Forms.Timer lockScreenTimer;
+			// 初始化键盘计时器
+			if (mainTimer != null)
+				MessageBox.Show("mainTimer初始值不为Null", "Error");
+			mainTimer = new System.Windows.Forms.Timer();
+			mainTimer.Interval = 100;
+			mainTimer.Tick += delegate
+			{
+				string toShow = "";
+				if (IsKeyLocked(Keys.CapsLock))
+				{
+					toShow += "大写锁定打开\n";
+				}
+				if (!IsKeyLocked(Keys.NumLock))
+				{
+					toShow += "数字锁定关闭\n";
+				}
+				if (IsKeyLocked(Keys.Scroll))
+				{
+					toShow += "滚动锁定打开\n";
+				}
+				label1.Text = toShow;
+			};
+			mainTimer.Start();//立即启动
+		}
 		private void Ximi_Load(object sender, EventArgs e)
 		{
-			//label1.t
-			//label1.Parent = pictureBox1;
-			label2.Text = "";
+			label_debug.Text = "";
+			// 添加鼠标滚轮事件
 			pictureBox1.MouseWheel += Ximi_MouseWheel;
-			//label1.Location = new Point(0, 0);
 		}
 
 
 		Point point; //鼠标按下时的点
 		bool isMoving = false;//标识是否拖动
 
-		private void Ximi_MouseWheel(object? sender, MouseEventArgs e)
-		{
-			if (isMoving)
-			{
-				if (e.Delta > 0)
-				{
-					SendMessage(Handle, WM_APPCOMMAND, 0, APPCOMMAND_VOLUME_UP);
-				}
-				else
-				{
-					SendMessage(Handle, WM_APPCOMMAND, 0, APPCOMMAND_VOLUME_DOWN);
-				}
-			}
-		}
 		private void Ximi_MouseDown(object sender, MouseEventArgs e)
 		{
 			//MessageBox.Show("cnm");
@@ -96,62 +154,23 @@ namespace ProjXimi
 			}
 		}
 
-		private void timer1_Tick(object sender, EventArgs e)
+		// 滚轮调音量
+		private void Ximi_MouseWheel(object? sender, MouseEventArgs e)
 		{
-			string toShow = "";
-			if (IsKeyLocked(Keys.CapsLock))
+			if (isMoving)
 			{
-				toShow += "大写锁定已经打开\n";
+				if (e.Delta > 0)
+				{
+					SendMessage(Handle, WM_APPCOMMAND, 0, APPCOMMAND_VOLUME_UP);
+				}
+				else
+				{
+					SendMessage(Handle, WM_APPCOMMAND, 0, APPCOMMAND_VOLUME_DOWN);
+				}
 			}
-			if (!IsKeyLocked(Keys.NumLock))
-			{
-				toShow += "数字锁定已经关闭\n";
-			}
-			if (IsKeyLocked(Keys.Scroll))
-			{
-				toShow += "滚动锁定已经打开\n";
-			}
-			label1.Text = toShow;
-		}
-
-		private void label1_Click(object sender, EventArgs e)
-		{
-
 		}
 
 
-
-		//**********引用Win32程序****************
-		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-		private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
-
-		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-		private static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
-		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-		private static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
-
-		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-		private static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
-
-		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-		private static extern bool LockWorkStation();//调用windows的系统锁定 
-
-		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-		public static extern IntPtr SendMessage(IntPtr hWnd, uint wMsg, uint wParam, uint lParam);
-		
-       
-
-
-
-		//***************Win32的常量*********************
-		private const uint WM_CLOSE = 0x0010;
-		private const uint WM_SYSCOMMAND = 0x0112;
-		private const uint SC_MAXIMIZE = 0xF030;
-		private const uint SC_MONITORPOWER = 0xF170;
-		private const uint APPCOMMAND_VOLUME_MUTE = 0x80000;
-		private const uint APPCOMMAND_VOLUME_UP = 0xA0000;
-		private const uint APPCOMMAND_VOLUME_DOWN = 0x90000;
-		private const uint WM_APPCOMMAND = 0x319;
 
 
 		// EnumWindows回调函数委托  
@@ -195,21 +214,15 @@ namespace ProjXimi
 		}
 
 
-
-
-
-
-
-		private void label2_Click(object sender, EventArgs e)
-		{
-
-		}
-
 		private void Ximi_FormClosed(object sender, FormClosedEventArgs e)
 		{
-			if(lockScreenTimer!=null)
-				lockScreenTimer.Dispose();
-			topmostTimer.Dispose();
+			lockScreenTimer?.Dispose();
+			each1sTimer?.Dispose();
+			mainTimer?.Dispose();
+
+			ramCounter?.Dispose();
+			cpuCounter?.Dispose();
+			diskCounter?.Dispose();
 		}
 	}
 }
