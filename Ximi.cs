@@ -9,7 +9,10 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using System.Threading;
+using System.Management;
+using OpenHardwareMonitor.Hardware;
+using Microsoft.VisualBasic.Devices;
 
 namespace ProjXimi
 {
@@ -32,8 +35,18 @@ namespace ProjXimi
 
 		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
 		public static extern IntPtr SendMessage(IntPtr hWnd, uint wMsg, uint wParam, uint lParam);
-
-
+		// 设置此窗体为活动窗体：
+		// 将创建指定窗口的线程带到前台并激活该窗口。键盘输入直接指向窗口，并为用户更改各种视觉提示。
+		// 系统为创建前台窗口的线程分配的优先级略高于其他线程。
+		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+		public static extern bool SetForegroundWindow(IntPtr hWnd);
+		// 设置此窗体为活动窗体：
+		// 激活窗口。窗口必须附加到调用线程的消息队列。
+		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+		public static extern IntPtr SetActiveWindow(IntPtr hWnd);
+		// 设置窗体位置
+		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+		private static extern int SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int Width, int Height, UInt32 flags);
 
 
 
@@ -46,7 +59,11 @@ namespace ProjXimi
 		private const uint APPCOMMAND_VOLUME_UP = 0xA0000;
 		private const uint APPCOMMAND_VOLUME_DOWN = 0x90000;
 		private const uint WM_APPCOMMAND = 0x319;
-
+		private static IntPtr HWND_TOPMOST = new IntPtr(-1);
+		private static IntPtr HWND_NOTOPMOST = new IntPtr(-2);
+		private const UInt32 SWP_NOSIZE = 0x0001;
+		private const UInt32 SWP_NOMOVE = 0x0002;
+		private const UInt32 SWP_SHOWWINDOW = 0x0040;
 
 		System.Windows.Forms.Timer each1sTimer;
 		System.Windows.Forms.Timer lockScreenTimer;
@@ -59,6 +76,9 @@ namespace ProjXimi
 		public Ximi()
 		{
 			InitializeComponent();
+
+			OpenHardwareMonitor.Hardware.Computer _computer = new OpenHardwareMonitor.Hardware.Computer { CPUEnabled = true };
+			_computer.Open();
 
 			ramCounter = new PerformanceCounter("Memory", "% Committed Bytes In Use");
 			cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
@@ -83,11 +103,14 @@ namespace ProjXimi
 			each1sTimer.Interval = 1000;
 			each1sTimer.Tick += delegate
 			{
-				TopMost = true;
+				// TopMost = true;
+				BringToFront();
 				label2.Text = "";
 				label2.Text += "RAM: " + $"{ramCounter.NextValue():0.0}%".PadLeft(6) + "\n";
 				label2.Text += "CPU: " + $"{cpuCounter.NextValue():0.0}%".PadLeft(6) + "\n";
 				label2.Text += "Disk:" + $"{diskCounter.NextValue():0.0}%".PadLeft(6) + "\n";
+
+				label_debug.Text = "";
 			};
 			each1sTimer.Start();//立即启动
 
@@ -120,6 +143,12 @@ namespace ProjXimi
 			label_debug.Text = "";
 			// 添加鼠标滚轮事件
 			pictureBox1.MouseWheel += Ximi_MouseWheel;
+
+			//SetWindowPos(this.Handle, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+			// 设置本窗体为活动窗体
+			//SetActiveWindow(this.Handle);
+			//SetForegroundWindow(this.Handle);
+			// 设置窗体置顶
 		}
 
 
@@ -131,12 +160,14 @@ namespace ProjXimi
 			//MessageBox.Show("cnm");
 			point = e.Location;
 			isMoving = true;//标识是否拖动
+			pictureBox1.Image.Dispose();
 			pictureBox1.Image = Properties.Resources.zouFullClicking;
 		}
 
 		private void UpMouse()
 		{
 			isMoving = false;//标识是否拖动
+			pictureBox1.Image.Dispose();
 			pictureBox1.Image = Properties.Resources.zouFull;
 		}
 
@@ -203,6 +234,7 @@ namespace ProjXimi
 						MessageBox.Show("F4:关闭所有文件夹\nL:3秒后锁屏\n滚轮调节音量", "提示");
 						break;
 					case Keys.F4:
+
 						EnumWindows(new EnumWindowsProc(CloseExplorerWindow), IntPtr.Zero);
 						break;
 					case Keys.L:
@@ -223,6 +255,7 @@ namespace ProjXimi
 			ramCounter?.Dispose();
 			cpuCounter?.Dispose();
 			diskCounter?.Dispose();
+			//myComputer?.Close();
 		}
 	}
 }

@@ -33,4 +33,14 @@
     <Folder Include="Resources\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.Management" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="OpenHardwareMonitorLib">
+      <HintPath>Extensions\OpenHardwareMonitorLib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

@@ -77,7 +77,7 @@ namespace ProjXimi
 
 		private void MainWindow_FormClosing(object sender, FormClosingEventArgs e)
 		{
-			switch(e.CloseReason)
+			switch (e.CloseReason)
 			{
 				case CloseReason.UserClosing:
 					//关闭窗口？如果不想死，就取消关闭
@@ -108,6 +108,13 @@ namespace ProjXimi
 		private void MainWindow_FormClosed(object sender, FormClosedEventArgs e)
 		{
 			notifyIcon1.Dispose();
+		}
+
+		//通过大按钮也可以关闭
+		private void button3_Click(object sender, EventArgs e)
+		{
+			stillAlive = false;
+			Close();
 		}
 	}
 }

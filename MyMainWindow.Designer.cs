@@ -35,6 +35,7 @@
 			ExitToolStripMenuItem = new ToolStripMenuItem();
 			button1 = new Button();
 			button2 = new Button();
+			button3 = new Button();
 			contextMenuStrip1.SuspendLayout();
 			SuspendLayout();
 			// 
@@ -66,7 +67,7 @@
 			button1.Name = "button1";
 			button1.Size = new Size(171, 54);
 			button1.TabIndex = 0;
-			button1.Text = "打开Ximi";
+			button1.Text = "打开悬浮窗";
 			button1.UseVisualStyleBackColor = true;
 			button1.Click += button1_Click;
 			// 
@@ -77,15 +78,27 @@
 			button2.Name = "button2";
 			button2.Size = new Size(171, 54);
 			button2.TabIndex = 1;
-			button2.Text = "关闭Ximi";
+			button2.Text = "关闭悬浮窗";
 			button2.UseVisualStyleBackColor = true;
 			button2.Click += button2_Click;
+			// 
+			// button3
+			// 
+			button3.Font = new Font("Microsoft YaHei UI", 15F, FontStyle.Regular, GraphicsUnit.Point);
+			button3.Location = new Point(348, 242);
+			button3.Name = "button3";
+			button3.Size = new Size(171, 54);
+			button3.TabIndex = 2;
+			button3.Text = "退出程序";
+			button3.UseVisualStyleBackColor = true;
+			button3.Click += button3_Click;
 			// 
 			// MyMainWindow
 			// 
 			AutoScaleDimensions = new SizeF(7F, 17F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(531, 308);
+			Controls.Add(button3);
 			Controls.Add(button2);
 			Controls.Add(button1);
 			FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -93,6 +106,7 @@
 			MinimizeBox = false;
 			Name = "MyMainWindow";
 			Text = "Ximi";
+			TopMost = true;
 			FormClosing += MainWindow_FormClosing;
 			FormClosed += MainWindow_FormClosed;
 			Load += MainWindow_Load;
@@ -110,5 +124,6 @@
 		private ToolStripMenuItem ExitToolStripMenuItem;
 		private Button button1;
 		private Button button2;
+		private Button button3;
 	}
 }
