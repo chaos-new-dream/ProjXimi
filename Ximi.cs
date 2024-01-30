@@ -2,18 +2,15 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Diagnostics;
+using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Threading;
-using System.Management;
 using OpenHardwareMonitor.Hardware;
-using Microsoft.VisualBasic.Devices;
-
 namespace ProjXimi
 {
 	public partial class Ximi : Form
@@ -65,24 +62,36 @@ namespace ProjXimi
 		private const UInt32 SWP_NOMOVE = 0x0002;
 		private const UInt32 SWP_SHOWWINDOW = 0x0040;
 
+
+
 		System.Windows.Forms.Timer each1sTimer;
 		System.Windows.Forms.Timer lockScreenTimer;
 		System.Windows.Forms.Timer mainTimer;
 
 
-		PerformanceCounter ramCounter;
-		PerformanceCounter cpuCounter;
-		PerformanceCounter diskCounter;
+		//1分钟左右置顶一次
+		//321
+		const int BringToFrontMaxNum = 60;
+		int bringToFront = 0;
+
+
 		public Ximi()
 		{
 			InitializeComponent();
 
-			OpenHardwareMonitor.Hardware.Computer _computer = new OpenHardwareMonitor.Hardware.Computer { CPUEnabled = true };
-			_computer.Open();
+			OpenHardwareMonitor.Hardware.Computer compu = new OpenHardwareMonitor.Hardware.Computer();
+			compu.Open();
+			//ramCounter = new PerformanceCounter("Memory", "% Committed Bytes In Use");
+			//cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+			//diskCounter = new PerformanceCounter("PhysicalDisk", "% Disk Time", "_Total");
+			////gpuCounter = new PerformanceCounter("GPU Engine", "% Utilization");
 
-			ramCounter = new PerformanceCounter("Memory", "% Committed Bytes In Use");
-			cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-			diskCounter = new PerformanceCounter("PhysicalDisk", "% Disk Time", "_Total");
+
+			//if (NvmlNativeMethods.nvmlInit() != ManagedCuda.Nvml.nvmlReturn.Success)
+			//{
+			//	throw new Exception("初始化NVML失败");
+			//}
+			//NvmlNativeMethods.nvmlDeviceGetHandleByIndex(0, ref nvml_device);
 
 			// 初始化计时器
 			if (lockScreenTimer != null)
@@ -104,11 +113,31 @@ namespace ProjXimi
 			each1sTimer.Tick += delegate
 			{
 				// TopMost = true;
-				BringToFront();
+				if (bringToFront > 0)
+				{
+					bringToFront--;
+				}
+				else
+				{
+					bringToFront = BringToFrontMaxNum;
+					BringToFront();
+				}
+				//nvmlUtilization nu = new nvmlUtilization();
+
+				//if (NvmlNativeMethods.nvmlDeviceGetUtilizationRates(nvml_device, ref nu) != ManagedCuda.Nvml.nvmlReturn.Success)
+				//{
+				//	throw new Exception("获得失败");
+				//}
+
 				label2.Text = "";
-				label2.Text += "RAM: " + $"{ramCounter.NextValue():0.0}%".PadLeft(6) + "\n";
-				label2.Text += "CPU: " + $"{cpuCounter.NextValue():0.0}%".PadLeft(6) + "\n";
-				label2.Text += "Disk:" + $"{diskCounter.NextValue():0.0}%".PadLeft(6) + "\n";
+				label2.Text += "RAM: " + $"{19.2:0.0}%".PadLeft(6) + "\n";
+				label2.Text += "CPU: " + $"{19.2:0.0}%".PadLeft(6) + "\n";
+				label2.Text += "磁盘:" + $"{19.2:0.0}%".PadLeft(6) + "\n";
+				//label2.Text += "GPU: " + $"{nu.gpu:0.0}%".PadLeft(6) + "\n";
+				//label2.Text += "显存:" + $"{nu.memory:0.0}%".PadLeft(6) + "\n";
+
+
+
 
 				label_debug.Text = "";
 			};
@@ -138,6 +167,7 @@ namespace ProjXimi
 			};
 			mainTimer.Start();//立即启动
 		}
+
 		private void Ximi_Load(object sender, EventArgs e)
 		{
 			label_debug.Text = "";
@@ -154,7 +184,6 @@ namespace ProjXimi
 
 		Point point; //鼠标按下时的点
 		bool isMoving = false;//标识是否拖动
-
 		private void Ximi_MouseDown(object sender, MouseEventArgs e)
 		{
 			//MessageBox.Show("cnm");
@@ -163,7 +192,6 @@ namespace ProjXimi
 			pictureBox1.Image.Dispose();
 			pictureBox1.Image = Properties.Resources.zouFullClicking;
 		}
-
 		private void UpMouse()
 		{
 			isMoving = false;//标识是否拖动
@@ -186,7 +214,7 @@ namespace ProjXimi
 		}
 
 		// 滚轮调音量
-		private void Ximi_MouseWheel(object? sender, MouseEventArgs e)
+		private void Ximi_MouseWheel(object sender, MouseEventArgs e)
 		{
 			if (isMoving)
 			{
@@ -252,10 +280,11 @@ namespace ProjXimi
 			each1sTimer?.Dispose();
 			mainTimer?.Dispose();
 
-			ramCounter?.Dispose();
-			cpuCounter?.Dispose();
-			diskCounter?.Dispose();
 			//myComputer?.Close();
 		}
+
+
+
 	}
+
 }
