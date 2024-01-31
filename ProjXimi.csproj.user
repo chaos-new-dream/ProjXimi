@@ -4,10 +4,10 @@
     <_LastSelectedProfileId>C:\Users\19386\Desktop\repos\ProjXimi\Properties\PublishProfiles\FolderProfile.pubxml</_LastSelectedProfileId>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Update="Ximi.cs">
+    <Compile Update="MyMainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="MyMainWindow.cs">
+    <Compile Update="Ximi.cs">
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>

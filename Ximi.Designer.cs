@@ -45,9 +45,6 @@
 			pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;
 			pictureBox1.TabIndex = 0;
 			pictureBox1.TabStop = false;
-			pictureBox1.MouseDown += Ximi_MouseDown;
-			pictureBox1.MouseMove += Ximi_MouseMove;
-			pictureBox1.MouseUp += Ximi_MouseUp;
 			// 
 			// label1
 			// 
@@ -55,20 +52,17 @@
 			label1.AutoSize = true;
 			label1.BackColor = Color.WhiteSmoke;
 			label1.Font = new Font("Microsoft YaHei UI", 16F, FontStyle.Regular, GraphicsUnit.Point);
-			label1.Location = new Point(171, 250);
+			label1.Location = new Point(145, 200);
 			label1.Name = "label1";
 			label1.Size = new Size(145, 90);
 			label1.TabIndex = 1;
 			label1.Text = "大写锁定打开\r\n数字锁定关闭\r\n滚动锁定打开";
 			label1.TextAlign = ContentAlignment.MiddleCenter;
-			label1.MouseDown += Ximi_MouseDown;
-			label1.MouseMove += Ximi_MouseMove;
-			label1.MouseUp += Ximi_MouseUp;
 			// 
 			// label_debug
 			// 
 			label_debug.AutoSize = true;
-			label_debug.Location = new Point(224, 170);
+			label_debug.Location = new Point(293, 303);
 			label_debug.Name = "label_debug";
 			label_debug.Size = new Size(47, 17);
 			label_debug.TabIndex = 2;
@@ -81,9 +75,10 @@
 			label2.Font = new Font("黑体", 9F, FontStyle.Regular, GraphicsUnit.Point);
 			label2.Location = new Point(293, 200);
 			label2.Name = "label2";
-			label2.Size = new Size(53, 36);
+			label2.Size = new Size(53, 60);
 			label2.TabIndex = 3;
-			label2.Text = "RAM: 32%\r\nCPU:  1%\r\nDisk: 2%";
+			label2.Text = "RAM: 32%\r\nCPU:  1%\r\n磁盘: 2%\r\nGPU:  0%\r\n显存: 0%";
+			label2.Click += label2_Click;
 			// 
 			// Ximi
 			// 
@@ -102,8 +97,10 @@
 			TopMost = true;
 			TransparencyKey = Color.White;
 			FormClosed += Ximi_FormClosed;
-			Load += Ximi_Load;
 			KeyDown += Ximi_KeyDown;
+			MouseDown += Ximi_MouseDown;
+			MouseMove += Ximi_MouseMove;
+			MouseUp += Ximi_MouseUp;
 			((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
 			ResumeLayout(false);
 			PerformLayout();
