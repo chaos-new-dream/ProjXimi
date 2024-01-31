@@ -309,15 +309,10 @@ namespace ProjXimi
 			//myComputer?.Close();
 		}
 
-<<<<<<< HEAD
 		private void label2_Click(object sender, EventArgs e)
 		{
 
 		}
-=======
-
-
->>>>>>> 89d015a8898893a8e857507be5a190d03a598248
 	}
 
 }
