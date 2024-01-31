@@ -4,10 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Reflection.Emit;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -195,7 +194,6 @@ namespace ProjXimi
 			};
 			mainTimer.Start();//立即启动
 		}
-
 		private void Ximi_Load(object sender, EventArgs e)
 		{
 
@@ -218,6 +216,7 @@ namespace ProjXimi
 			pictureBox1.Image.Dispose();
 			pictureBox1.Image = Properties.Resources.zouFullClicking;
 		}
+
 		private void UpMouse()
 		{
 			isMoving = false;//标识是否拖动
@@ -240,7 +239,7 @@ namespace ProjXimi
 		}
 
 		// 滚轮调音量
-		private void Ximi_MouseWheel(object sender, MouseEventArgs e)
+		private void Ximi_MouseWheel(object? sender, MouseEventArgs e)
 		{
 			if (isMoving)
 			{
@@ -306,6 +305,9 @@ namespace ProjXimi
 			each1sTimer?.Dispose();
 			mainTimer?.Dispose();
 
+			ramCounter?.Dispose();
+			cpuCounter?.Dispose();
+			diskCounter?.Dispose();
 			//myComputer?.Close();
 		}
 
@@ -314,5 +316,4 @@ namespace ProjXimi
 
 		}
 	}
-
 }
