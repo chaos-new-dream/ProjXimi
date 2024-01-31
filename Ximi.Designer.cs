@@ -28,12 +28,12 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			pictureBox1 = new PictureBox();
-			label1 = new Label();
-			label_debug = new Label();
-			label2 = new Label();
-			((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
-			SuspendLayout();
+			this.pictureBox1 = new System.Windows.Forms.PictureBox();
+			this.label1 = new System.Windows.Forms.Label();
+			this.label2 = new System.Windows.Forms.Label();
+			this.label_debug = new System.Windows.Forms.Label();
+			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+			this.SuspendLayout();
 			// 
 			// pictureBox1
 			// 
@@ -108,9 +108,9 @@
 
 		#endregion
 
-		private PictureBox pictureBox1;
-		private Label label1;
-		private Label label_debug;
-		private Label label2;
+		private System.Windows.Forms.PictureBox pictureBox1;
+		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Label label_debug;
 	}
 }
