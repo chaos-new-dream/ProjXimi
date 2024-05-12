@@ -45,7 +45,7 @@
 			notifyIcon1.Icon = (Icon)resources.GetObject("notifyIcon1.Icon");
 			notifyIcon1.Text = "Ximi";
 			notifyIcon1.Visible = true;
-			notifyIcon1.MouseDoubleClick += notifyIcon1_MouseDoubleClick;
+			notifyIcon1.MouseDoubleClick += NotifyIcon1_MouseDoubleClick;
 			// 
 			// contextMenuStrip1
 			// 
@@ -69,7 +69,7 @@
 			button1.TabIndex = 0;
 			button1.Text = "打开悬浮窗";
 			button1.UseVisualStyleBackColor = true;
-			button1.Click += button1_Click;
+			button1.Click += OpenXimi;
 			// 
 			// button2
 			// 
@@ -80,7 +80,7 @@
 			button2.TabIndex = 1;
 			button2.Text = "关闭悬浮窗";
 			button2.UseVisualStyleBackColor = true;
-			button2.Click += button2_Click;
+			button2.Click += CloseXimi;
 			// 
 			// button3
 			// 
@@ -91,7 +91,7 @@
 			button3.TabIndex = 2;
 			button3.Text = "退出程序";
 			button3.UseVisualStyleBackColor = true;
-			button3.Click += button3_Click;
+			button3.Click += ExitProgram;
 			// 
 			// MyMainWindow
 			// 

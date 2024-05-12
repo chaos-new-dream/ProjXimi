@@ -7,6 +7,9 @@
     <Compile Update="MyMainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="Schedule.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Update="Ximi.cs">
       <SubType>Form</SubType>
     </Compile>

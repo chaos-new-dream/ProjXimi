@@ -1,17 +1,32 @@
+using System.Runtime.InteropServices;
+
 namespace ProjXimi
 {
 	public partial class MyMainWindow : Form
 	{
+		[DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+		private static extern int SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int Width, int Height, UInt32 flags);
 		public MyMainWindow()
 		{
-			ximi = new Ximi();
 			InitializeComponent();
 		}
 		private void MainWindow_Shown(object sender, EventArgs e)
 		{
+			//ximi ??= new Ximi();
+			//ximi.Show();
+			schedule ??= new Schedule();
+			schedule.Show();
+			schedule.SendToBack();
 			Hide();
 		}
 
+		private void MainWindow_Load(object sender, EventArgs e)
+		{
+
+		}
+
+		Ximi? ximi;
+		Schedule? schedule;
 
 
 		//**************拖动**********************
@@ -31,32 +46,28 @@ namespace ProjXimi
 		{
 			if (e.Button == MouseButtons.Left && isMoving)
 			{
-				Point pNew = new Point(e.Location.X - point.X, e.Location.Y - point.Y);
+				Point pNew = new(e.Location.X - point.X, e.Location.Y - point.Y);
 				Location = new Point(Location.X + pNew.X, Location.Y + pNew.Y);
 			}
 		}
 
 
-		private void MainWindow_Load(object sender, EventArgs e)
-		{
-			ximi.Show();
-		}
-
 
 
 
 		// 打开和关闭Ximi悬浮窗口
-		Ximi ximi;
-		private void button1_Click(object sender, EventArgs e)
+		private void OpenXimi(object sender, EventArgs e)
 		{
+			ximi ??= new Ximi();
 			if (ximi.IsDisposed)
 			{
 				ximi = new Ximi();
 			}
 			ximi.Show();
 		}
-		private void button2_Click(object sender, EventArgs e)
+		private void CloseXimi(object sender, EventArgs e)
 		{
+			ximi ??= new Ximi();
 			if (ximi.IsDisposed)
 			{
 				ximi = new Ximi();
@@ -69,7 +80,7 @@ namespace ProjXimi
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="e"></param>
-		private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
+		private void NotifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
 		{
 			Show();//展示
 		}
@@ -111,7 +122,7 @@ namespace ProjXimi
 		}
 
 		//通过大按钮也可以关闭
-		private void button3_Click(object sender, EventArgs e)
+		private void ExitProgram(object sender, EventArgs e)
 		{
 			stillAlive = false;
 			Close();

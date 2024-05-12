@@ -34,6 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Cryptography.Fernet" Version="1.1.1" />
     <PackageReference Include="ManagedCuda" Version="10.0.0" />
   </ItemGroup>
 
