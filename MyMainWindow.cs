@@ -12,11 +12,12 @@ namespace ProjXimi
 		}
 		private void MainWindow_Shown(object sender, EventArgs e)
 		{
-			//ximi ??= new Ximi();
-			//ximi.Show();
-			schedule ??= new Schedule();
-			schedule.Show();
-			schedule.SendToBack();
+			ximi ??= new Ximi();
+			ximi.Show();
+
+			//schedule ??= new Schedule();
+			//schedule.Show();
+			//schedule.SendToBack();
 			Hide();
 		}
 
@@ -26,7 +27,7 @@ namespace ProjXimi
 		}
 
 		Ximi? ximi;
-		Schedule? schedule;
+		//Schedule? schedule;
 
 
 		//**************ÍÏ¶¯**********************
